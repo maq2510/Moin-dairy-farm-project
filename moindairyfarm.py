@@ -99,12 +99,12 @@ else:
             "Entry No": [1],  # Start index from 1
             "Customer Name": [customer_name],
             "Open/Close": [open_close_status],
-            "Frequency": [""],
-            "Liters Purchased": [""],
-            "Rate per Liter (INR)": [""],
-            "Bill Amount (INR)": [""],
-            "Payment Status": [""],
-            "Remark": [""],
+            "Frequency": ["-"],
+            "Liters Purchased": ["-"],
+            "Rate per Liter (INR)": ["-"],
+            "Bill Amount (INR)": ["-"],
+            "Payment Status": ["-"],
+            "Remark": ["-"],
             "Date": [datetime.today().strftime("%d/%B/%Y")],  # Add the current date
         }
         new_entry = pd.DataFrame(data)
@@ -114,17 +114,7 @@ else:
             existing_records = pd.read_excel("customer_records.xlsx")
             entry_no = existing_records["Entry No"].max() + 1  # Increment the entry number
             new_entry["Entry No"] = entry_no
-
-            # Check if the month has changed
-            if not pd.isnull(existing_records["Date"]).any():
-                last_date = pd.to_datetime(existing_records["Date"]).max()
-                if last_date.month != pd.to_datetime(current_date).month:
-                    # Create a new DataFrame for the next month
-                    updated_records = new_entry
-                else:
-                    updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
-            else:
-                updated_records = new_entry
+            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
 
         except FileNotFoundError:
             updated_records = new_entry
@@ -134,19 +124,6 @@ else:
 
         # Show success message
         st.success("Customer status updated to 'Close'!")
-
-
-# Download link for Excel file
-def get_table_download_link(df):
-    # Create a BytesIO buffer to hold the Excel file
-    buffer = io.BytesIO()
-    # Save the DataFrame to the buffer as an Excel file
-    df.to_excel(buffer, index=False)
-    # Rewind the buffer to the beginning
-    buffer.seek(0)
-    # Encode the buffer to Base64 for download
-    b64 = base64.b64encode(buffer.read()).decode()
-    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
 
 
 # Display existing customer records for the current date
@@ -165,3 +142,14 @@ try:
 except FileNotFoundError:
     st.warning("No customer records found. Start by entering new customer details.")
 
+# Download link for Excel file
+def get_table_download_link(df):
+    # Create a BytesIO buffer to hold the Excel file
+    buffer = io.BytesIO()
+    # Save the DataFrame to the buffer as an Excel file
+    df.to_excel(buffer, index=False)
+    # Rewind the buffer to the beginning
+    buffer.seek(0)
+    # Encode the buffer to Base64 for download
+    b64 = base64.b64encode(buffer.read()).decode()
+    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
