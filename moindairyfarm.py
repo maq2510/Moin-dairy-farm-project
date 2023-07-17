@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[12]:
-
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -27,8 +21,7 @@ open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
 if open_close_status == "Open":
     frequency = st.radio("Frequency", ["Monthly", "Daily"])
     liters_purchased = st.selectbox("Liters of Milk Purchased", [i * 0.5 for i in range(1, 51)])
-    rate_per_liter_options = [50, 60, 70]
-    rate_per_liter = st.selectbox("Rate per Liter (INR)", rate_per_liter_options)
+    rate_per_liter = st.number_input("Rate per Liter (INR)", min_value=1, value=60)
 
     # Calculate the bill amount based on liters purchased and rate per liter
     bill_amount_rupees = liters_purchased * rate_per_liter
@@ -72,9 +65,9 @@ if open_close_status == "Open":
         # Check if the Excel file exists, if not, create it
         try:
             existing_records = pd.read_excel("customer_records.xlsx")
-            entry_no = existing_records.index.max() + 2  # Increment the entry number
+            entry_no = existing_records["Entry No"].max() + 1  # Increment the entry number
             new_entry["Entry No"] = entry_no
-            updated_records = existing_records.append(new_entry, ignore_index=True)
+            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
         except FileNotFoundError:
             updated_records = new_entry
 
@@ -105,9 +98,9 @@ else:
         # Check if the Excel file exists, if not, create it
         try:
             existing_records = pd.read_excel("customer_records.xlsx")
-            entry_no = existing_records.index.max() + 2  # Increment the entry number
+            entry_no = existing_records["Entry No"].max() + 1  # Increment the entry number
             new_entry["Entry No"] = entry_no
-            updated_records = existing_records.append(new_entry, ignore_index=True)
+            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
         except FileNotFoundError:
             updated_records = new_entry
 
@@ -134,10 +127,3 @@ st.markdown(
     f'<a href="customer_records.xlsx" download="customer_records.xlsx">Download Customer Records</a>',
     unsafe_allow_html=True,
 )
-
-
-# In[ ]:
-
-
-
-
