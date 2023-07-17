@@ -21,7 +21,8 @@ open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
 if open_close_status == "Open":
     frequency = st.radio("Frequency", ["Monthly", "Daily"])
     liters_purchased = st.selectbox("Liters of Milk Purchased", [i * 0.5 for i in range(1, 51)])
-    rate_per_liter = st.number_input("Rate per Liter (INR)", min_value=1, value=60)
+    rate_per_liter_options = [50, 60, 70]
+    rate_per_liter = st.selectbox("Rate per Liter (INR)", rate_per_liter_options)
 
     # Calculate the bill amount based on liters purchased and rate per liter
     bill_amount_rupees = liters_purchased * rate_per_liter
@@ -67,7 +68,18 @@ if open_close_status == "Open":
             existing_records = pd.read_excel("customer_records.xlsx")
             entry_no = existing_records["Entry No"].max() + 1  # Increment the entry number
             new_entry["Entry No"] = entry_no
-            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
+
+            # Check if the month has changed
+            if not pd.isnull(existing_records["Date"]).any():
+                last_date = pd.to_datetime(existing_records["Date"]).max()
+                if last_date.month != pd.to_datetime(current_date).month:
+                    # Create a new DataFrame for the next month
+                    updated_records = new_entry
+                else:
+                    updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
+            else:
+                updated_records = new_entry
+
         except FileNotFoundError:
             updated_records = new_entry
 
@@ -100,7 +112,18 @@ else:
             existing_records = pd.read_excel("customer_records.xlsx")
             entry_no = existing_records["Entry No"].max() + 1  # Increment the entry number
             new_entry["Entry No"] = entry_no
-            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
+
+            # Check if the month has changed
+            if not pd.isnull(existing_records["Date"]).any():
+                last_date = pd.to_datetime(existing_records["Date"]).max()
+                if last_date.month != pd.to_datetime(current_date).month:
+                    # Create a new DataFrame for the next month
+                    updated_records = new_entry
+                else:
+                    updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
+            else:
+                updated_records = new_entry
+
         except FileNotFoundError:
             updated_records = new_entry
 
