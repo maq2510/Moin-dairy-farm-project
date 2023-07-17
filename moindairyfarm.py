@@ -136,19 +136,6 @@ else:
         st.success("Customer status updated to 'Close'!")
 
 
-# Display existing customer records for the current date
-st.subheader("Customer Records for " + datetime.today().strftime("%d/%B/%Y"))
-try:
-    existing_records = pd.read_excel("customer_records.xlsx")
-    existing_records.set_index("Entry No", inplace=True)  # Set "Entry No" as the index
-    if "Date" in existing_records.columns:
-        st.dataframe(existing_records.drop(columns=["Date"]))  # Drop the "Date" column from display
-    else:
-        st.dataframe(existing_records)
-except FileNotFoundError:
-    st.warning("No customer records found. Start by entering new customer details.")
-
-
 # Download link for Excel file
 def get_table_download_link(df):
     # Create a BytesIO buffer to hold the Excel file
@@ -160,4 +147,21 @@ def get_table_download_link(df):
     # Encode the buffer to Base64 for download
     b64 = base64.b64encode(buffer.read()).decode()
     return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
+
+
+# Display existing customer records for the current date
+st.subheader("Customer Records for " + datetime.today().strftime("%d/%B/%Y"))
+try:
+    existing_records = pd.read_excel("customer_records.xlsx")
+    existing_records.set_index("Entry No", inplace=True)  # Set "Entry No" as the index
+    if "Date" in existing_records.columns:
+        st.dataframe(existing_records.drop(columns=["Date"]))  # Drop the "Date" column from display
+    else:
+        st.dataframe(existing_records)
+
+    # Show the download link if records are available
+    st.markdown(get_table_download_link(existing_records), unsafe_allow_html=True)
+
+except FileNotFoundError:
+    st.warning("No customer records found. Start by entering new customer details.")
 
