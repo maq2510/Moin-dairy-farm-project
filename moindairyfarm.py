@@ -49,7 +49,7 @@ st.markdown(
 )
 
 # Logo and header
-st.image(""C:\Users\maqpr\Downloads\cow-with-dairy-farm-label\exdo_t4co_211109.jpg"", use_column_width=True)
+st.image("C:\Users\maqpr\Downloads\cow-with-dairy-farm-label\exdo_t4co_211109.jpg", use_column_width=True)
 st.title("Moin Dairy Farm Customer Details")
 st.header("Enter Customer Information")
 
