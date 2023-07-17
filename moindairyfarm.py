@@ -18,6 +18,10 @@ st.header("Enter Customer Information")
 # Input fields
 customer_name = st.text_input("Customer Name", "")
 open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
+# Function to update the current date dynamically
+@st.cache(suppress_st_warning=True, ttl=60)  # Cache the function for 60 seconds
+def update_current_date():
+    return datetime.today().strftime("%d/%B/%Y")
 
 # Check if the customer is open or closed
 if open_close_status == "Open":
@@ -45,8 +49,9 @@ if open_close_status == "Open":
     else:
         remark = st.text_input("Remark", "")
 
-    # Current date
-    current_date = datetime.today().strftime("%d/%B/%Y")
+   # Current date
+current_date = update_current_date()
+st.write(f"Current Date: {current_date}")
 
     # Submit button for "Open" customers
     if st.button("Submit"):
