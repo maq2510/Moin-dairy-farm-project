@@ -124,6 +124,7 @@ except FileNotFoundError:
 
 # Download link for Excel file
 st.markdown(
-    f'<a href="customer_records.xlsx" download="customer_records.xlsx">Download Customer Records</a>',
+    f'<a href="data:file/xlsx;base64,{base64.b64encode(open("customer_records.xlsx", "rb").read()).decode()} \
+    "download="customer_records.xlsx">Download Customer Records</a>',
     unsafe_allow_html=True,
 )
