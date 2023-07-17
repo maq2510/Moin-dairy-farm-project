@@ -99,12 +99,12 @@ else:
             "Entry No": [1],  # Start index from 1
             "Customer Name": [customer_name],
             "Open/Close": [open_close_status],
-            "Frequency": ["Null"],
-            "Liters Purchased": ["Null"],
-            "Rate per Liter (INR)": ["Null"],
-            "Bill Amount (INR)": ["Null"],
-            "Payment Status": ["Null"],
-            "Remark": ["Null"],
+            "Frequency": ["na"],
+            "Liters Purchased": ["na"],
+            "Rate per Liter (INR)": ["na"],
+            "Bill Amount (INR)": ["na"],
+            "Payment Status": ["na"],
+            "Remark": ["na"],
             "Date": [datetime.today().strftime("%d/%B/%Y")],  # Add the current date
         }
         new_entry = pd.DataFrame(data)
