@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import base64
 import io
 
 # Page configuration
@@ -147,8 +148,10 @@ except FileNotFoundError:
     st.warning("No customer records found. Start by entering new customer details.")
 
 # Download link for Excel file
-st.markdown(
-    f'<a href="data:file/xlsx;base64,{base64.b64encode(open("customer_records.xlsx", "rb").read()).decode()} \
-    "download="customer_records.xlsx">Download Customer Records</a>',
-    unsafe_allow_html=True,
-)
+def get_table_download_link(df):
+    csv = df.to_excel(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
+
+st.markdown(get_table_download_link(existing_records), unsafe_allow_html=True)
+
