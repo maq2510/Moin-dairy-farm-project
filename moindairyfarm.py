@@ -50,8 +50,8 @@ if open_close_status == "Open":
         remark = st.text_input("Remark", "")
 
    # Current date
-current_date = update_current_date()
-st.write(f"Current Date: {current_date}")
+     current_date = update_current_date()
+     st.write(f"Current Date: {current_date}")
 
     # Submit button for "Open" customers
     if st.button("Submit"):
