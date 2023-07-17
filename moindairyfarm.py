@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import base64
 import io
 
@@ -11,17 +11,56 @@ st.set_page_config(
     layout="wide",
 )
 
-# Title and header
+# Custom CSS styling
+st.markdown(
+    """
+    <style>
+        body {
+            color: #333;
+            line-height: 1.6;
+            font-family: Arial, sans-serif;
+        }
+        .stApp {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .stTextInput {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+        }
+        .stButton button {
+            background-color: #008CBA;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .stButton button:hover {
+            background-color: #0073ad;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Logo and header
+st.image(""C:\Users\maqpr\Downloads\cow-with-dairy-farm-label\exdo_t4co_211109.jpg"", use_column_width=True)
 st.title("Moin Dairy Farm Customer Details")
 st.header("Enter Customer Information")
 
-# Input fields
-customer_name = st.text_input("Customer Name", "")
-open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
 # Function to update the current date dynamically
 @st.cache(suppress_st_warning=True, ttl=60)  # Cache the function for 60 seconds
 def update_current_date():
     return datetime.today().strftime("%d/%B/%Y")
+
+# Input fields
+customer_name = st.text_input("Customer Name", "")
+open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
 
 # Check if the customer is open or closed
 if open_close_status == "Open":
@@ -49,9 +88,9 @@ if open_close_status == "Open":
     else:
         remark = st.text_input("Remark", "")
 
-   # Current date
-     current_date = update_current_date()
-     st.write(f"Current Date: {current_date}")
+    # Current date
+    current_date = update_current_date()
+    st.write(f"Current Date: {current_date}")
 
     # Submit button for "Open" customers
     if st.button("Submit"):
@@ -129,7 +168,6 @@ else:
 
         # Show success message
         st.success("Customer status updated to 'Close'!")
-
 
 # Download link for Excel file
 def get_table_download_link(df):
