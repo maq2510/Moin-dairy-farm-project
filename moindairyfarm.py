@@ -99,12 +99,12 @@ else:
             "Entry No": [1],  # Start index from 1
             "Customer Name": [customer_name],
             "Open/Close": [open_close_status],
-            "Frequency": ["-"],
-            "Liters Purchased": ["-"],
-            "Rate per Liter (INR)": ["-"],
-            "Bill Amount (INR)": ["-"],
-            "Payment Status": ["-"],
-            "Remark": ["-"],
+            "Frequency": [""],
+            "Liters Purchased": [""],
+            "Rate per Liter (INR)": [""],
+            "Bill Amount (INR)": [""],
+            "Payment Status": [""],
+            "Remark": [""],
             "Date": [datetime.today().strftime("%d/%B/%Y")],  # Add the current date
         }
         new_entry = pd.DataFrame(data)
@@ -126,6 +126,18 @@ else:
         st.success("Customer status updated to 'Close'!")
 
 
+# Download link for Excel file
+def get_table_download_link(df):
+    # Create a BytesIO buffer to hold the Excel file
+    buffer = io.BytesIO()
+    # Save the DataFrame to the buffer as an Excel file
+    df.to_excel(buffer, index=False)
+    # Rewind the buffer to the beginning
+    buffer.seek(0)
+    # Encode the buffer to Base64 for download
+    b64 = base64.b64encode(buffer.read()).decode()
+    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
+
 # Display existing customer records for the current date
 st.subheader("Customer Records for " + datetime.today().strftime("%d/%B/%Y"))
 try:
@@ -141,15 +153,3 @@ try:
 
 except FileNotFoundError:
     st.warning("No customer records found. Start by entering new customer details.")
-
-# Download link for Excel file
-def get_table_download_link(df):
-    # Create a BytesIO buffer to hold the Excel file
-    buffer = io.BytesIO()
-    # Save the DataFrame to the buffer as an Excel file
-    df.to_excel(buffer, index=False)
-    # Rewind the buffer to the beginning
-    buffer.seek(0)
-    # Encode the buffer to Base64 for download
-    b64 = base64.b64encode(buffer.read()).decode()
-    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
