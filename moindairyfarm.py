@@ -26,13 +26,15 @@ open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
 
 # Check if the customer is open or closed
 if open_close_status == "Open":
-    frequency = st.radio("Frequency", ["Monthly", "Daily"])
+    frequency_label = "Frequency"
     liters_purchased = st.selectbox("Liters of Milk Purchased", [i * 0.5 for i in range(1, 51)])
     rate_per_liter_options = [50, 60, 70]
     rate_per_liter = st.selectbox("Rate per Liter (INR)", rate_per_liter_options)
 
     # Calculate the bill amount based on liters purchased and rate per liter
     bill_amount_rupees = liters_purchased * rate_per_liter
+    frequency = st.radio(frequency_label, ["Monthly", "Daily"])
+
     if frequency == "Monthly":
         bill_amount_rupees *= 30  # Assuming it's for a month
 
@@ -98,9 +100,10 @@ if open_close_status == "Open":
         st.success("Customer details saved successfully!")
 
 else:
+    frequency_label = "Status"
     # Submit button for "Close" customers
     if st.button("Close Customer"):
-        frequency = st.radio("Frequency", ["Monthly", "Daily"])
+        frequency = st.radio(frequency_label, ["Monthly", "Daily"])
         # Save customer details to a DataFrame for "Closed" customer
         data = {
             "Entry No": [1],  # Start index from 1
