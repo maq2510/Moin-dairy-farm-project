@@ -17,10 +17,12 @@ def save_to_excel(df, file_name):
 def load_from_excel(file_name):
     try:
         df = pd.read_excel(file_name)
-        df.set_index("Entry No", inplace=True)  # Set "Entry No" as the index
+        if not df.empty:
+            df.set_index("Entry No", inplace=True)  # Set "Entry No" as the index
         return df
     except FileNotFoundError:
         return pd.DataFrame()  # Return an empty DataFrame if the file doesn't exist
+
 
 # Function to get a download link for an Excel file
 def get_table_download_link(df):
