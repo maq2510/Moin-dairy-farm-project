@@ -45,10 +45,7 @@ if open_close_status == "Open":
         payment_status = st.radio("Payment Status", ["Paid", "Due"])
 
     # Remark
-    if frequency == "Monthly":
-        remark = ""
-    else:
-        remark = st.text_input("Remark", "")
+    remark = st.text_input("Remark", "")
 
     # Current date
     current_date = update_current_date()
