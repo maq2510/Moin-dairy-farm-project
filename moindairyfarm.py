@@ -143,12 +143,14 @@ if st.button("Clear"):
         # Filter out the row to clear
         updated_records = existing_records[existing_records["Entry No"] != selected_entry_no]
 
+        # Re-index the DataFrame to rearrange the "Entry No" after clearing a row
+        updated_records.reset_index(drop=True, inplace=True)
+
         # Save the DataFrame to an Excel file
         updated_records.to_excel("customer_records.xlsx", index=False)
 
         # Show success message
         st.success(f"Entry No {selected_entry_no} cleared successfully!")
-
 
     except FileNotFoundError:
         st.warning("No customer records found. Start by entering new customer details.")
