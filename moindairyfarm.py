@@ -20,8 +20,9 @@ st.header("Enter Customer Information")
 def update_current_date():
     return datetime.today().strftime("%d/%B/%Y")
 
-# Input fields
+# Input fields++++++++++++++
 customer_name = st.text_input("Customer Name", "")
+frequency = st.radio("Frequency", ["Monthly", "Daily"])
 open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
 
 # Check if the customer is open or closed
