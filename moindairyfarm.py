@@ -11,7 +11,6 @@ st.set_page_config(
     layout="wide",
 )
 
-
 # Logo and header
 st.title("Moin Dairy Farm Customer Details")
 st.header("Enter Customer Information")
@@ -101,6 +100,7 @@ if open_close_status == "Open":
 else:
     # Submit button for "Close" customers
     if st.button("Close Customer"):
+        frequency = st.radio("Frequency", ["Monthly", "Daily"])
         # Save customer details to a DataFrame for "Closed" customer
         data = {
             "Entry No": [1],  # Start index from 1
@@ -111,7 +111,7 @@ else:
             "Rate per Liter (INR)": ["na"],
             "Bill Amount (INR)": ["na"],
             "Payment Status": ["na"],
-            "Remark": [""],
+            "Remark": ["na"],
             "Date": [datetime.today().strftime("%d/%B/%Y")],  # Add the current date
         }
         new_entry = pd.DataFrame(data)
