@@ -23,7 +23,6 @@ def load_from_excel(file_name):
     except FileNotFoundError:
         return pd.DataFrame()  # Return an empty DataFrame if the file doesn't exist
 
-
 # Function to get a download link for an Excel file
 def get_table_download_link(df):
     buffer = io.BytesIO()
@@ -151,31 +150,6 @@ else:
 
         # Show success message
         st.success("Customer status updated to 'Close'!")
-
-# Clear button for specific row
-if st.button("Clear"):
-    try:
-        # Load existing customer records
-        existing_records = load_from_excel("customer_records.xlsx")
-
-        # Show the list of available entry numbers for the user to choose which row to clear
-        selected_entry_no = st.selectbox("Select Entry No to Clear", existing_records.index.tolist())
-
-        # Filter out the row to clear
-        updated_records = existing_records.drop(index=selected_entry_no)
-
-        # Re-index the DataFrame to rearrange the "Entry No"
-        updated_records.reset_index(drop=True, inplace=True)
-        updated_records.index += 1  # Start the "Entry No" from 1
-
-        # Save the DataFrame to an Excel file
-        save_to_excel(updated_records, "customer_records.xlsx")
-
-        # Show success message
-        st.success(f"Entry No {selected_entry_no} cleared successfully!")
-
-    except FileNotFoundError:
-        st.warning("No customer records found. Start by entering new customer details.")
 
 # Display existing customer records for the current date
 st.subheader("Customer Records for " + datetime.today().strftime("%d/%B/%Y"))
