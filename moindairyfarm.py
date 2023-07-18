@@ -132,18 +132,23 @@ else:
         # Show success message
         st.success("Customer status updated to 'Close'!")
 
-# Clear button for incorrect entry
+# Clear button for specific row
 if st.button("Clear"):
     try:
         existing_records = pd.read_excel("customer_records.xlsx")
-        if not existing_records.empty:
-            updated_records = existing_records.iloc[:-1]  # Remove the last row
 
-            # Save the DataFrame to an Excel file
-            updated_records.to_excel("customer_records.xlsx", index=False)
+        # Show the list of available entry numbers for the user to choose which row to clear
+        selected_entry_no = st.selectbox("Select Entry No to Clear", existing_records["Entry No"].tolist())
 
-            # Show success message
-            st.success("Last entry cleared successfully!")
+        # Filter out the row to clear
+        updated_records = existing_records[existing_records["Entry No"] != selected_entry_no]
+
+        # Save the DataFrame to an Excel file
+        updated_records.to_excel("customer_records.xlsx", index=False)
+
+        # Show success message
+        st.success(f"Entry No {selected_entry_no} cleared successfully!")
+
 
     except FileNotFoundError:
         st.warning("No customer records found. Start by entering new customer details.")
