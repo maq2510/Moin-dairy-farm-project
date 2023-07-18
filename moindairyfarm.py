@@ -107,7 +107,7 @@ else:
             "Rate per Liter (INR)": ["na"],
             "Bill Amount (INR)": ["na"],
             "Payment Status": ["na"],
-            "Remark": [""],
+            "Remark": [remark],
             "Date": [datetime.today().strftime("%d/%B/%Y")],  # Add the current date
         }
         new_entry = pd.DataFrame(data)
