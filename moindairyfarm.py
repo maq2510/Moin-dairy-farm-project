@@ -4,6 +4,32 @@ from datetime import datetime, timedelta
 import base64
 import io
 
+# Function to update the current date dynamically
+@st.cache(suppress_st_warning=True, ttl=60)  # Cache the function for 60 seconds
+def update_current_date():
+    return datetime.today().strftime("%d/%B/%Y")
+
+# Function to save DataFrame to Excel file
+def save_to_excel(df, file_name):
+    df.to_excel(file_name, index=True)  # Include index in the Excel file
+
+# Function to load DataFrame from Excel file
+def load_from_excel(file_name):
+    try:
+        df = pd.read_excel(file_name)
+        df.set_index("Entry No", inplace=True)  # Set "Entry No" as the index
+        return df
+    except FileNotFoundError:
+        return pd.DataFrame()  # Return an empty DataFrame if the file doesn't exist
+
+# Function to get a download link for an Excel file
+def get_table_download_link(df):
+    buffer = io.BytesIO()
+    df.to_excel(buffer, index=False)
+    buffer.seek(0)
+    b64 = base64.b64encode(buffer.read()).decode()
+    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
+
 # Page configuration
 st.set_page_config(
     page_title="Moin Dairy Farm",
@@ -11,15 +37,9 @@ st.set_page_config(
     layout="wide",
 )
 
-
 # Logo and header
 st.title("Moin Dairy Farm Customer Details")
 st.header("Enter Customer Information")
-
-# Function to update the current date dynamically
-@st.cache(suppress_st_warning=True, ttl=60)  # Cache the function for 60 seconds
-def update_current_date():
-    return datetime.today().strftime("%d/%B/%Y")
 
 # Input fields
 customer_name = st.text_input("Customer Name", "")
@@ -57,9 +77,11 @@ if open_close_status == "Open":
 
     # Submit button for "Open" customers
     if st.button("Submit"):
+        # Load existing customer records
+        existing_records = load_from_excel("customer_records.xlsx")
+
         # Save customer details to a DataFrame
         data = {
-            "Entry No": [1],  # Start index from 1
             "Customer Name": [customer_name],
             "Open/Close": [open_close_status],
             "Frequency": [frequency],
@@ -72,28 +94,20 @@ if open_close_status == "Open":
         }
         new_entry = pd.DataFrame(data)
 
-        # Check if the Excel file exists, if not, create it
-        try:
-            existing_records = pd.read_excel("customer_records.xlsx")
-            entry_no = existing_records["Entry No"].max() + 1  # Increment the entry number
-            new_entry["Entry No"] = entry_no
+        # Check if there are existing records
+        if not existing_records.empty:
+            # Increment the entry number and set it for the new entry
+            new_entry["Entry No"] = existing_records.index.max() + 1
 
-            # Check if the month has changed
-            if not pd.isnull(existing_records["Date"]).any():
-                last_date = pd.to_datetime(existing_records["Date"]).max()
-                if last_date.month != pd.to_datetime(current_date).month:
-                    # Create a new DataFrame for the next month
-                    updated_records = new_entry
-                else:
-                    updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
-            else:
-                updated_records = new_entry
-
-        except FileNotFoundError:
+            # Concatenate the new entry with existing records
+            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
+        else:
+            # If no existing records, set the entry number to 1 for the new entry
+            new_entry["Entry No"] = 1
             updated_records = new_entry
 
         # Save the DataFrame to an Excel file
-        updated_records.to_excel("customer_records.xlsx", index=False)
+        save_to_excel(updated_records, "customer_records.xlsx")
 
         # Show success message
         st.success("Customer details saved successfully!")
@@ -101,9 +115,11 @@ if open_close_status == "Open":
 else:
     # Submit button for "Close" customers
     if st.button("Close Customer"):
+        # Load existing customer records
+        existing_records = load_from_excel("customer_records.xlsx")
+
         # Save customer details to a DataFrame for "Closed" customer
         data = {
-            "Entry No": [1],  # Start index from 1
             "Customer Name": [customer_name],
             "Open/Close": [open_close_status],
             "Frequency": ["na"],
@@ -116,18 +132,20 @@ else:
         }
         new_entry = pd.DataFrame(data)
 
-        # Check if the Excel file exists, if not, create it
-        try:
-            existing_records = pd.read_excel("customer_records.xlsx")
-            entry_no = existing_records["Entry No"].max() + 1  # Increment the entry number
-            new_entry["Entry No"] = entry_no
-            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
+        # Check if there are existing records
+        if not existing_records.empty:
+            # Increment the entry number and set it for the new entry
+            new_entry["Entry No"] = existing_records.index.max() + 1
 
-        except FileNotFoundError:
+            # Concatenate the new entry with existing records
+            updated_records = pd.concat([existing_records, new_entry], ignore_index=True)
+        else:
+            # If no existing records, set the entry number to 1 for the new entry
+            new_entry["Entry No"] = 1
             updated_records = new_entry
 
         # Save the DataFrame to an Excel file
-        updated_records.to_excel("customer_records.xlsx", index=False)
+        save_to_excel(updated_records, "customer_records.xlsx")
 
         # Show success message
         st.success("Customer status updated to 'Close'!")
@@ -135,19 +153,21 @@ else:
 # Clear button for specific row
 if st.button("Clear"):
     try:
-        existing_records = pd.read_excel("customer_records.xlsx")
+        # Load existing customer records
+        existing_records = load_from_excel("customer_records.xlsx")
 
         # Show the list of available entry numbers for the user to choose which row to clear
-        selected_entry_no = st.selectbox("Select Entry No to Clear", existing_records["Entry No"].tolist())
+        selected_entry_no = st.selectbox("Select Entry No to Clear", existing_records.index.tolist())
 
         # Filter out the row to clear
-        updated_records = existing_records[existing_records["Entry No"] != selected_entry_no]
+        updated_records = existing_records.drop(index=selected_entry_no)
 
-        # Re-index the DataFrame to rearrange the "Entry No" after clearing a row
+        # Re-index the DataFrame to rearrange the "Entry No"
         updated_records.reset_index(drop=True, inplace=True)
+        updated_records.index += 1  # Start the "Entry No" from 1
 
         # Save the DataFrame to an Excel file
-        updated_records.to_excel("customer_records.xlsx", index=False)
+        save_to_excel(updated_records, "customer_records.xlsx")
 
         # Show success message
         st.success(f"Entry No {selected_entry_no} cleared successfully!")
@@ -155,30 +175,22 @@ if st.button("Clear"):
     except FileNotFoundError:
         st.warning("No customer records found. Start by entering new customer details.")
 
-# Download link for Excel file
-def get_table_download_link(df):
-    # Create a BytesIO buffer to hold the Excel file
-    buffer = io.BytesIO()
-    # Save the DataFrame to the buffer as an Excel file
-    df.to_excel(buffer, index=False)
-    # Rewind the buffer to the beginning
-    buffer.seek(0)
-    # Encode the buffer to Base64 for download
-    b64 = base64.b64encode(buffer.read()).decode()
-    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
-
 # Display existing customer records for the current date
 st.subheader("Customer Records for " + datetime.today().strftime("%d/%B/%Y"))
 try:
-    existing_records = pd.read_excel("customer_records.xlsx")
-    existing_records.set_index("Entry No", inplace=True)  # Set "Entry No" as the index
-    if "Date" in existing_records.columns:
-        st.dataframe(existing_records.drop(columns=["Date"]))  # Drop the "Date" column from display
-    else:
-        st.dataframe(existing_records)
+    existing_records = load_from_excel("customer_records.xlsx")
 
-    # Show the download link if records are available
-    st.markdown(get_table_download_link(existing_records), unsafe_allow_html=True)
+    # Show the updated customer records
+    if not existing_records.empty:
+        if "Date" in existing_records.columns:
+            st.dataframe(existing_records.drop(columns=["Date"]))  # Drop the "Date" column from display
+        else:
+            st.dataframe(existing_records)
+
+        # Show the download link if records are available
+        st.markdown(get_table_download_link(existing_records), unsafe_allow_html=True)
+    else:
+        st.warning("No customer records found. Start by entering new customer details.")
 
 except FileNotFoundError:
     st.warning("No customer records found. Start by entering new customer details.")
