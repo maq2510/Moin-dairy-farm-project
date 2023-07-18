@@ -11,45 +11,8 @@ st.set_page_config(
     layout="wide",
 )
 
-# Custom CSS styling
-st.markdown(
-    """
-    <style>
-        body {
-            color: #333;
-            line-height: 1.6;
-            font-family: Arial, sans-serif;
-        }
-        .stApp {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .stTextInput {
-            background-color: #f5f5f5;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 8px;
-        }
-        .stButton button {
-            background-color: #008CBA;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .stButton button:hover {
-            background-color: #0073ad;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 # Logo and header
-st.image(r"C:\Users\maqpr\Downloads\cow-with-dairy-farm-label\exdo_t4co_211109.jpg", use_column_width=True)
 st.title("Moin Dairy Farm Customer Details")
 st.header("Enter Customer Information")
 
@@ -168,6 +131,22 @@ else:
 
         # Show success message
         st.success("Customer status updated to 'Close'!")
+
+# Clear button for incorrect entry
+if st.button("Clear"):
+    try:
+        existing_records = pd.read_excel("customer_records.xlsx")
+        if not existing_records.empty:
+            updated_records = existing_records.iloc[:-1]  # Remove the last row
+
+            # Save the DataFrame to an Excel file
+            updated_records.to_excel("customer_records.xlsx", index=False)
+
+            # Show success message
+            st.success("Last entry cleared successfully!")
+
+    except FileNotFoundError:
+        st.warning("No customer records found. Start by entering new customer details.")
 
 # Download link for Excel file
 def get_table_download_link(df):
