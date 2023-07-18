@@ -20,14 +20,13 @@ st.header("Enter Customer Information")
 def update_current_date():
     return datetime.today().strftime("%d/%B/%Y")
 
-# Input fields++++++++++++++
+# Input fields
 customer_name = st.text_input("Customer Name", "")
 frequency = st.radio("Frequency", ["Monthly", "Daily"])
 open_close_status = st.radio("Open/Close Status", ["Open", "Close"])
 
 # Check if the customer is open or closed
 if open_close_status == "Open":
-    frequency = st.radio("Frequency", ["Monthly", "Daily"])
     liters_purchased = st.selectbox("Liters of Milk Purchased", [i * 0.5 for i in range(1, 51)])
     rate_per_liter_options = [50, 60, 70]
     rate_per_liter = st.selectbox("Rate per Liter (INR)", rate_per_liter_options)
@@ -101,7 +100,6 @@ if open_close_status == "Open":
 else:
     # Submit button for "Close" customers
     if st.button("Close Customer"):
-        frequency = st.radio("Frequency", ["Monthly", "Daily"])
         # Save customer details to a DataFrame for "Closed" customer
         data = {
             "Entry No": [1],  # Start index from 1
