@@ -95,6 +95,9 @@ if open_close_status == "Open":
         st.success("Customer details saved successfully!")
 
 else:
+    # Remark for "Closed" customers
+    remark = st.text_input("Remark", "")
+
     # Submit button for "Close" customers
     if st.button("Close Customer"):
         # Save customer details to a DataFrame for "Closed" customer
@@ -138,7 +141,12 @@ def get_table_download_link(df):
     buffer.seek(0)
     # Encode the buffer to Base64 for download
     b64 = base64.b64encode(buffer.read()).decode()
-    return f'<a href="data:application/octet-stream;base64,{b64}" download="customer_records.xlsx">Download Customer Records</a>'
+
+    # Include the current date in the file name
+    current_date = datetime.today().strftime("%Y-%m-%d")
+    file_name = f"customer_records_{current_date}.xlsx"
+
+    return f'<a href="data:application/octet-stream;base64,{b64}" download="{file_name}">Download Customer Records</a>'
 
 # Display existing customer records for the current date
 st.subheader("Customer Records for " + datetime.today().strftime("%d/%B/%Y"))
